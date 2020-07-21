@@ -37,15 +37,13 @@ class CPU:
             sys.exit(1)
 
         for instruction in self.reg:
-            selfram[address] = instruction
+            self.ram[address] = instruction
             address += 1
 
 
         # For now, we've just hardcoded a program:
 
-        for instruction in program:
-            self.ram[address] = instruction
-            address += 1
+
 
     def ram_read(self, address):
         return self.ram[address]
