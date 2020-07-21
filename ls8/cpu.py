@@ -7,6 +7,7 @@ class CPU:
     LDI = 0b10000010
     PRN = 0b01000111
     HLT = 0b00000001
+    MUL = 0b10100010
 
     def __init__(self):
        self.ram = [0] * 256
@@ -14,10 +15,19 @@ class CPU:
        self.pc = 0
        self.running = True
 
-    def load(self, program):
+    def load(self, program = None):
         """Load a program into memory."""
-
+        memory = [0] * 256
         address = 0
+        with open(program) as file:
+            for line in file:
+                try:
+                    line = line.split("#", 1)[0]
+                    line = int(line, 2)
+                    memory[address] = line
+                    address += 1
+                except ValueError
+
 
         # For now, we've just hardcoded a program:
 
@@ -36,7 +46,8 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
 
         #elif op == "SUB": etc
         else:
@@ -80,6 +91,9 @@ class CPU:
                 self.running = False
             if inst_reg == self.LDI:
                 self.reg[operand_a] = operand_b
+            if inst_reg == self.MUL:
+                self.reg[operand_a] *= self.reg[operand_b]
+
 
             offset = inst_reg >> 6
             self.pc += offset + 1
