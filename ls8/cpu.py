@@ -15,18 +15,30 @@ class CPU:
        self.pc = 0
        self.running = True
 
-    def load(self, program = None):
+    def load(self):
         """Load a program into memory."""
-        memory = [0] * 256
         address = 0
-        with open(program) as file:
-            for line in file:
-                try:
-                    line = line.split("#", 1)[0]
-                    line = int(line, 2)
-                    memory[address] = line
-                    address += 1
-                except ValueError
+
+        if len(sys.argv) != 2:
+            print("usage: comp.py + filename")
+            sys.exit(1)
+        try:
+            with open(sys.argv[1]) as file:
+                for line in file:
+                    try:
+                        line = line.split("#", 1)[0]
+                        line = int(line, 2)
+                        self.ram[address] = line
+                        address += 1
+                    except ValueError:
+                        pass
+        except FileNotFoundError:
+            print(f"Could not find file: {sys.argv[1]}")
+            sys.exit(1)
+
+        for instruction in self.reg:
+            selfram[address] = instruction
+            address += 1
 
 
         # For now, we've just hardcoded a program:

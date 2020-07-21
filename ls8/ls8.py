@@ -15,6 +15,6 @@ program = [
       0b00000000,
       0b00000001, # HLT
   ]
-cpu.load(program)
+cpu.load()
 cpu.run()
 cpu.run()
