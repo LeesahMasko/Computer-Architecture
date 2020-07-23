@@ -10,6 +10,19 @@ class CPU:
     MUL = 0b10100010
     PUSH = 0b01000101
     POP = 0b01000110
+    CALL = 0b01010000
+    RET = 0b00010001
+    CMP = 0b10100111
+    JMP = 0b01010100
+    JEQ = 0b01010101
+    JNE = 0b01010110
+    AND = 0b10101000
+    OR = 0b10101010
+    XOR = 0b10101011
+    NOT = 0b01101001
+    SHL = 0b10101100
+    SHR = 0b10101101
+    MOD = 0b10100100
     NOP = 0b00000000
 
     def __init__(self):
@@ -116,6 +129,27 @@ class CPU:
             elif inst_reg == self.POP:
                 self.reg[operand_a] = self.ram_read(self.reg[self.sp])
                 self.reg[self.sp] += 1
+
+            elif inst_reg == self.CALL:
+                return_address = self.pc + 2
+                self.reg[self.sp] -= 1
+                address_to_push_to = self.reg[self.sp]
+                self.ram[address_to_push_to] = return_address
+
+                subroutine_address = self.reg[operand_a]
+
+                self.pc = subroutine_address
+
+            elif inst_reg == self.RET:
+                address_to_pop_from = self.reg[self.pc]
+                return_address = self.ram[address_to_pop_from]
+                self.reg[self.pc] += 1
+
+                self.pc = return_address
+
+
+
+
             elif inst_reg == self.NOP:
                 continue
             else:
