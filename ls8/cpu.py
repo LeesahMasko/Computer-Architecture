@@ -8,11 +8,15 @@ class CPU:
     PRN = 0b01000111
     HLT = 0b00000001
     MUL = 0b10100010
+    PUSH = 0b01000101
+    POP = 0b01000110
+    NOP = 0b00000000
 
     def __init__(self):
        self.ram = [0] * 256
-       self.reg = [0] * 8
+       self.reg = [0] * 7 + [0xF4]
        self.pc = 0
+       self.sp = 7 #(R7 is reserved for the SP)
        self.running = True
 
     def load(self):
@@ -97,13 +101,28 @@ class CPU:
             # register number = reg_num
             if inst_reg == self.PRN:
                 print(self.reg[operand_a])
-            if inst_reg == self.HLT:
+            elif inst_reg == self.HLT:
                 self.running = False
-            if inst_reg == self.LDI:
+            elif inst_reg == self.LDI:
                 self.reg[operand_a] = operand_b
-            if inst_reg == self.MUL:
+            elif inst_reg == self.MUL:
                 self.reg[operand_a] *= self.reg[operand_b]
+            elif inst_reg == self.PUSH:
+                # sp = stack pointer
+                self.reg[self.sp] -= 1
+                self.reg[self.sp] &= 0xFF
+                self.ram_write(self.reg[self.sp], self.reg[operand_a])
 
+            elif inst_reg == self.POP:
+                self.reg[operand_a] = self.ram_read(self.reg[self.sp])
+                self.reg[self.sp] += 1
+            elif inst_reg == self.NOP:
+                continue
+            else:
+                print(f"Unknown instruction {inst_reg} at {self.pc}")
+
+            print("REG", self.reg)
+            print("RAM", self.ram)
 
             offset = inst_reg >> 6
             self.pc += offset + 1
