@@ -12,6 +12,7 @@ class CPU:
     POP = 0b01000110
     CALL = 0b01010000
     RET = 0b00010001
+    ADD = 0b10100000
     CMP = 0b10100111
     JMP = 0b01010100
     JEQ = 0b01010101
@@ -43,8 +44,10 @@ class CPU:
             with open(sys.argv[1]) as file:
                 for line in file:
                     try:
+                        # print("Line", line)
                         line = line.split("#", 1)[0]
                         line = int(line, 2)
+
                         self.ram[address] = line
                         address += 1
                     except ValueError:
@@ -119,7 +122,7 @@ class CPU:
             elif inst_reg == self.LDI:
                 self.reg[operand_a] = operand_b
             elif inst_reg == self.MUL:
-                self.reg[operand_a] *= self.reg[operand_b]
+                self.alu('MUL', operand_a, operand_b)
             elif inst_reg == self.PUSH:
                 # sp = stack pointer
                 self.reg[self.sp] -= 1
@@ -135,28 +138,30 @@ class CPU:
                 self.reg[self.sp] -= 1
                 address_to_push_to = self.reg[self.sp]
                 self.ram[address_to_push_to] = return_address
-
                 subroutine_address = self.reg[operand_a]
 
                 self.pc = subroutine_address
 
             elif inst_reg == self.RET:
-                address_to_pop_from = self.reg[self.pc]
-                return_address = self.ram[address_to_pop_from]
-                self.reg[self.pc] += 1
+                address_to_pop_from = self.reg[self.sp]
+                return_addr = self.ram[address_to_pop_from]
+                self.reg[self.sp] += 1
 
-                self.pc = return_address
+                # Set the PC to the return address
+                self.pc = return_addr
+            elif inst_reg == self.ADD:
+                self.alu('ADD', operand_a, operand_b)
 
 
 
-
-            elif inst_reg == self.NOP:
-                continue
+            # elif inst_reg == self.NOP:
+            #     continue
             else:
                 print(f"Unknown instruction {inst_reg} at {self.pc}")
 
-            print("REG", self.reg)
-            print("RAM", self.ram)
+            # print("REG", self.reg)
+            # print("RAM", self.ram)
 
-            offset = inst_reg >> 6
-            self.pc += offset + 1
+            if inst_reg != self.CALL and inst_reg != self.RET:
+                offset = inst_reg >> 6
+                self.pc += offset + 1

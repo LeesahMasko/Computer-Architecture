@@ -286,7 +286,7 @@ Halt the CPU (and exit the emulator).
 
 Machine code:
 ```
-00000001 
+00000001
 01
 ```
 
@@ -537,7 +537,7 @@ Pop the value at the top of the stack into the given register.
 
 Machine code:
 ```
-01000110 00000rrr
+01000110 0000rrr
 46 0r
 ```
 
